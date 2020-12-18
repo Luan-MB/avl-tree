@@ -108,12 +108,15 @@ t_node *fix_balance(t_node *node) {
 	
 	return node;
 }
-	
+
+// Função que varre a árvore procurando por um nodo com chave "key"
+// Se não encontrar, ele é criado e inserido na árvore
 t_node *insert_node(t_node *node, int key) {
-
+	
 	if (!node)
-		return new_node(key);
+		node = new_node(key);
 
+	// Algoritmo de busca BST
 	if (key < node->key) {
 		node->left = insert_node(node->left,key);
 		node->left->parent = node;
@@ -123,8 +126,10 @@ t_node *insert_node(t_node *node, int key) {
 	} else
 		return node;
 	
+	// Calcula-se a altura do novo nodo e balanceamento
 	node->height = node_height(node);
 	node->balance = node_balance(node);
+	// Arruma a árvore para manter o balanceamento
 	node = fix_balance(node);
 
 	return node;
@@ -137,41 +142,38 @@ t_node *remove_node(t_node *node, int key) {
 	if (!node)
 		return node;
 
-	if (key < node->key)
-		node->left = remove_node(node->left,key);
-	else if (key > node->key)
+	if (node->key < key)
 		node->right = remove_node(node->right,key);
+	else if (node->key > key)
+		node->left = remove_node(node->left,key);
 	else {
-		if ((!node->left) || (!node->right)) { 
-			if (node->right) {
-				aux = node->right;
-				node = aux;
-				free(aux);
-			}
-			else if (node->left) {
+		if ((!node->left) || (!node->right)) {
+			if (node->left) {
 				aux = node->left;
 				node = aux;
-				free(aux);
+			} else if (node->right) {
+				aux = node->right;
+				node = aux;
 			} else {
 				aux = node;
 				node = NULL;
-				free(aux);
 			}
+			free(aux);
 		} else {
 			aux = node->left;
-			while(aux->left)
+			while (aux->right)
 				aux = aux->right;
 			node->key = aux->key;
-			node->left = remove_node(node->left,node->key);
+			node->left = remove_node(node->left,key);
 		}
-
 	}
-	
-	if(!node)
+
+	if (!node)
 		return node;
 
 	node->height = node_height(node);
 	node->balance = node_balance(node);
+
 	node = fix_balance(node);
 
 	return node;
@@ -192,7 +194,7 @@ void print_avl(t_node *node) {
 	
 	node->level = node_level(node);
 	print_avl(node->left);
-	printf("%d,%d\n",node->key,node->level);		
+	printf("%d,%d\n",node->key,node->level);	
 	node->level = node_level(node);
 	print_avl(node->right);
 }

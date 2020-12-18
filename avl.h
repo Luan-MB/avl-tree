@@ -13,6 +13,7 @@ typedef struct t_node {
 t_node *new_node(int key);
 int node_height(t_node *root);
 int node_balance(t_node *root);
+t_node *search_node(t_node *root, int key);
 t_node *rot_left(t_node *node);
 t_node *rot_right(t_node *node);
 t_node *insert_node(t_node *root, int key);
