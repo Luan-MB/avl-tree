@@ -2,6 +2,7 @@
 #include "avl.h"
 #include <stdlib.h>
 
+// Função que cria novo nodo do tipo t_node * com a chave "key"
 t_node *new_node(int key) {
 
 	t_node *node = malloc(sizeof(t_node));
@@ -16,19 +17,21 @@ t_node *new_node(int key) {
 	return node;
 }
 
+// Função que calcula a altura do node "root"
 int node_height(t_node *root) {
 
 	int maxl, maxr;
 	
 	if (!root)
 		return -1;
-
+	// Calcula-se a altura para a direita e para a esquerda, retorna-se a maior
 	if ((maxl = node_height(root->left)) > (maxr = node_height(root->right)))
 	       	return (1 + maxl);
 	else
 		return (1 + maxr);
 }
 
+// Função que calcula fator de balanço do nodo "node"
 int node_balance(t_node *root) {
 
 	if (!root)
@@ -38,11 +41,12 @@ int node_balance(t_node *root) {
 
 }
 
-
+// Função que rotaciona o nodo "node" para a esquerda
 t_node *rot_left(t_node *node) {
 
 	t_node *aux;
 
+	// Faz-se as trocas dos ponteiros
 	aux = node->right;
 	aux->parent = node->parent;
 	node->parent = aux;
@@ -50,8 +54,9 @@ t_node *rot_left(t_node *node) {
 	node->right = aux->left;
 	if (node->right)
 		node->right->parent = node;
-	
 	aux->left = node;
+	
+	// Atualizam-se as alturas e fatores de balanceamento
 	aux->height = node_height(aux);
 	node->height = node_height(node);
 	aux->balance = node_balance(aux);
@@ -59,10 +64,12 @@ t_node *rot_left(t_node *node) {
 	return aux;
 }
 
+// Função que rotaciona o nodo "node" para a direita
 t_node *rot_right(t_node *node) {
 
 	t_node *aux;
 
+	// Trocam-se os ponteiros
 	aux = node->left;
 	aux->parent = node->parent;
 	node->parent = aux;
@@ -70,8 +77,9 @@ t_node *rot_right(t_node *node) {
 	node->left = aux->right;
 	if (node->left)
 		node->left->parent = node;
-
 	aux->right = node;
+	
+	// Atualizam-se as alturas e fator de balanceamento
 	aux->height = node_height(aux);
 	node->height = node_height(node);
 	aux->balance = node_balance(aux);
@@ -79,14 +87,19 @@ t_node *rot_right(t_node *node) {
 	return aux;
 }
 
+// Função responsável por manter a árvore ou subárvore, com raiz "node", balanceada
 t_node *fix_balance(t_node *node) {
 
+	// Se o fator de balanceamento for menor que -1, a árvore está right heavy
+	// Faz-se um rotação para a esquerda
 	if (node->balance < -1) {
 		if (node->right->balance > 0)
 			node->right = rot_right(node->right);
 		node = rot_left(node);
 
 	} 
+	// Se o fator for maior que 1, há um caso de left heavy
+	// Realiza-se uma rotação para a direita
 	else if (node->balance > 1) {
 		if (node->left->balance < 0)
 		       node->left = rot_left(node->left);

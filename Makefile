@@ -3,18 +3,18 @@
 CC = gcc
 CFLAGS = -Wall
 
-OBJECTS= wavinfo wavvol wavecho wavwide wavnorm wavcat wavmix wavrev
+OBJECTS= myavl
 
 all: $(OBJECTS) clean
 
-$(OBJECTS): $(OBJECTS).o wavlib.o
-	$(CC) $(CFLAGS) $(OBJECTS).o wavlib.o -o $(OBJECTS)
+$(OBJECTS): $(OBJECTS).o avl.o
+	$(CC) $(CFLAGS) $(OBJECTS).o avl.o -o $(OBJECTS)
 
-$(OBJECTS).o: $(OBJECTS).c wavlib.h
+$(OBJECTS).o: $(OBJECTS).c avl.h
 	$(CC) $(CFLAGS) $(OBJECTS).c -c
 
-wavlib.o: wavlib.c wavlib.h
-	$(CC) $(CFLAGS) wavlib.c -c
+avl.o: avl.c avl.h
+	$(CC) $(CFLAGS) avl.c -c
 
 clean:
 	-rm -f *.o
