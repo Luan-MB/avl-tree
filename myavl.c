@@ -22,5 +22,5 @@ int main () {
 		}
 	}
 	in_order(avl);
-	return 0;
+	return 1;
 }
