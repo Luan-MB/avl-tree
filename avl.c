@@ -41,7 +41,8 @@ int node_balance(t_node *root) {
 
 }
 
-t_node *refresh_node(t_node *node) {
+// Função que atualiza a altura e o fator de balanceamento de "node"
+t_node *update_node(t_node *node) {
 
 	node->height = node_height(node);
 	node->balance = node_balance(node);
@@ -64,8 +65,8 @@ t_node *rot_left(t_node *node) {
 	aux->left = node;
 	
 	// Atualizam-se as alturas e fatores de balanceamento
-	aux = refresh_node(aux);
-	node = refresh_node(node);
+	aux = update_node(aux);
+	node = update_node(node);
 	return aux;
 }
 
@@ -85,8 +86,8 @@ t_node *rot_right(t_node *node) {
 	aux->right = node;
 	
 	// Atualizam-se as alturas e fator de balanceamento
-	aux = refresh_node(aux);
-	node = refresh_node(node);
+	aux = update_node(aux);
+	node = update_node(node);
 	return aux;
 }
 
@@ -122,6 +123,7 @@ t_node *insert_node(t_node *node, int key) {
 		node = new_node(key);
 
 	// Algoritmo de busca BST
+	// Arruma-se os ponteiros "parent"
 	if (key < node->key) {
 		node->left = insert_node(node->left,key);
 		node->left->parent = node;
@@ -132,57 +134,68 @@ t_node *insert_node(t_node *node, int key) {
 		return node;
 	
 	// Calcula-se a altura do novo nodo e balanceamento
-	node = refresh_node(node);
+	node = update_node(node);
 	// Arruma a árvore para manter o balanceamento
 	node = fix_balance(node);
 
 	return node;
 }
 
+// Função que remove da árvore ou subárvore "node" o nodo com chave "key"
 t_node *remove_node(t_node *node, int key) {
 
 	t_node *aux;
 	
 	if (!node)
 		return node;
-
-	if (node->key < key)
+	// Algoritmo de busca em BST
+	// Arrumam-se os ponteiros "parent"
+	if (node->key < key) {
 		node->right = remove_node(node->right,key);
-	else if (node->key > key)
+		if (node->right)
+			node->right->parent = node;
+	} else if (node->key > key) {
 		node->left = remove_node(node->left,key);
-	else {
+		if (node->left)
+			node->left->parent = node;
+	} else {
+		// Se encontrado, o nodo pode ser de 3 tipos
 		if ((!node->left) || (!node->right)) {
-			if (node->left) {
-				aux = node->left;
-				node = aux;
-			} else if (node->right) {
+			// Com apenas um filho
+			if (node->right) {
 				aux = node->right;
 				node = aux;
+			} else if (node->left) {
+				aux = node->left;
+				node = aux;
+			// Nodo folha, ou sem filho
 			} else {
 				aux = node;
 				node = NULL;
 			}
 			free(aux);
 		} else {
+			// Nodo com dois filhos
+			// Função para achar o antecessor
 			aux = node->left;
 			while (aux->right)
 				aux = aux->right;
+			
 			node->key = aux->key;
-			node->left = remove_node(node->left,key);
+			node->left = remove_node(node->left,node->key);
 		}
-	}
-
+	}	
 	if (!node)
-		return node;
-
-	node->height = node_height(node);
-	node->balance = node_balance(node);
-
+		return NULL;
+	// Atualiza altura e balanceamento
+	node = update_node(node);
+	// Arruma o balanceamento se necessário
 	node = fix_balance(node);
 
 	return node;
 }
 
+// Função que calcula o nível do nodo
 int node_level(t_node *node) {
 
 	if (!node->parent)
@@ -191,16 +204,17 @@ int node_level(t_node *node) {
 	return (node->parent->level + 1);
 }
 
-void print_avl(t_node *node) {
+// Função que imprime em ordem "key" e "level" de cada nodo da árvore "node"
+void in_order(t_node *node) {
 
 	if (!node)
 		return;
 	
 	node->level = node_level(node);
-	print_avl(node->left);
+	in_order(node->left);
 	printf("%d,%d\n",node->key,node->level);
 	node->level = node_level(node);
-	print_avl(node->right);
+	in_order(node->right);
 }
 		
 

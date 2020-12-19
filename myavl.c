@@ -21,6 +21,6 @@ int main () {
 				break;
 		}
 	}
-	print_avl(avl);
+	in_order(avl);
 	return 0;
 }
