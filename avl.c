@@ -41,6 +41,13 @@ int node_balance(t_node *root) {
 
 }
 
+t_node *refresh_node(t_node *node) {
+
+	node->height = node_height(node);
+	node->balance = node_balance(node);
+	return node;
+}
+
 // Função que rotaciona o nodo "node" para a esquerda
 t_node *rot_left(t_node *node) {
 
@@ -57,10 +64,8 @@ t_node *rot_left(t_node *node) {
 	aux->left = node;
 	
 	// Atualizam-se as alturas e fatores de balanceamento
-	aux->height = node_height(aux);
-	node->height = node_height(node);
-	aux->balance = node_balance(aux);
-	node->balance = node_balance(node);
+	aux = refresh_node(aux);
+	node = refresh_node(node);
 	return aux;
 }
 
@@ -80,10 +85,8 @@ t_node *rot_right(t_node *node) {
 	aux->right = node;
 	
 	// Atualizam-se as alturas e fator de balanceamento
-	aux->height = node_height(aux);
-	node->height = node_height(node);
-	aux->balance = node_balance(aux);
-	node->balance = node_balance(node);
+	aux = refresh_node(aux);
+	node = refresh_node(node);
 	return aux;
 }
 
@@ -91,18 +94,20 @@ t_node *rot_right(t_node *node) {
 t_node *fix_balance(t_node *node) {
 
 	// Se o fator de balanceamento for menor que -1, a árvore está right heavy
-	// Faz-se um rotação para a esquerda
 	if (node->balance < -1) {
+		// Se há um zig zag rotaciona-se "node->right" a direita
 		if (node->right->balance > 0)
 			node->right = rot_right(node->right);
+		// Rotacão de "node" para a esquerda
 		node = rot_left(node);
 
 	} 
 	// Se o fator for maior que 1, há um caso de left heavy
-	// Realiza-se uma rotação para a direita
 	else if (node->balance > 1) {
+		// Se houver zig zag rotaciona-se "node->left" a esquerda
 		if (node->left->balance < 0)
 		       node->left = rot_left(node->left);
+		// Rotação de "node" para a direita
 		node = rot_right(node);	
 	}
 	
@@ -127,8 +132,7 @@ t_node *insert_node(t_node *node, int key) {
 		return node;
 	
 	// Calcula-se a altura do novo nodo e balanceamento
-	node->height = node_height(node);
-	node->balance = node_balance(node);
+	node = refresh_node(node);
 	// Arruma a árvore para manter o balanceamento
 	node = fix_balance(node);
 
@@ -194,7 +198,7 @@ void print_avl(t_node *node) {
 	
 	node->level = node_level(node);
 	print_avl(node->left);
-	printf("%d,%d\n",node->key,node->level);	
+	printf("%d,%d\n",node->key,node->level);
 	node->level = node_level(node);
 	print_avl(node->right);
 }
