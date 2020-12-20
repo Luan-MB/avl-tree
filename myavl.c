@@ -27,5 +27,6 @@ int main () {
 		}
 	}
 	in_order(avl);
+	free_node(avl);
 	return 1;
 }

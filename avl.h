@@ -25,5 +25,6 @@ t_node *insert_node(t_node *root, int key);
 t_node *remove_node(t_node *node, int key);
 int node_level(t_node *node);
 void in_order(t_node *node);
+void free_node(t_node *node);
 
 #endif

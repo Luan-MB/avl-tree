@@ -8,7 +8,10 @@
 t_node *new_node(int key) {
 
 	t_node *node = malloc(sizeof(t_node));
-
+	if (!node) {
+		perror("Falha ao alocar na memória\n");
+		exit(0);
+	}
 	node->key = key;
 	node->parent = NULL;
 	node->left = NULL;
@@ -219,4 +222,18 @@ void in_order(t_node *node) {
 	in_order(node->right);
 }
 		
+void free_node(t_node *node) {
 
+	t_node *left, *right;
+
+	if (node->left) {
+		left = node->left;
+		free_node(left);
+	}
+	if (node->right) {
+		right = node->right;
+		free_node(right);
+	}
+	free(node);
+	node = NULL;
+}
