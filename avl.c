@@ -224,16 +224,10 @@ void in_order(t_node *node) {
 		
 void free_node(t_node *node) {
 
-	t_node *left, *right;
-
-	if (node->left) {
-		left = node->left;
-		free_node(left);
-	}
-	if (node->right) {
-		right = node->right;
-		free_node(right);
-	}
+	if (node->left)
+		free_node(node->left);
+	if (node->right)
+		free_node(node->right);
 	free(node);
 	node = NULL;
 }
